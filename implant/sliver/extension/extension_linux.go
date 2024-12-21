@@ -59,7 +59,7 @@ func (d *LinuxExtension) GetArch() string {
 }
 
 func (d *LinuxExtension) Load() error {
-	fd, err := createMemFd("extension")
+	fd, err := createMemFd()
 	if err != nil {
 		log.Printf("Failed to create memfd: %v", err)
 		return err
@@ -106,8 +106,9 @@ func (d *LinuxExtension) extensionCallback(data uintptr, length uintptr) {
 }
 
 // createMemFd creates an in-memory file descriptor using the memfd_create syscall
-func createMemFd(name string) (int, error) {
-	fd, _, errno := syscall.Syscall(SYS_MEMFD_CREATE, uintptr(unsafe.Pointer(&[]byte(name)[0])), 0, 0)
+func createMemFd() (int, error) {
+	var emptyName [1]byte // A single null byte to represent an empty name
+	fd, _, errno := syscall.Syscall(SYS_MEMFD_CREATE, uintptr(unsafe.Pointer(&emptyName[0])), 0, 0)
 	if errno != 0 {
 		return -1, errno
 	}
