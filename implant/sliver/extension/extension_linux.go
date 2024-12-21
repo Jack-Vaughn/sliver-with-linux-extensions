@@ -67,6 +67,7 @@ func (d *LinuxExtension) Load() error {
 	err = writeToMemFd(fd, d.data)
 	if err != nil {
 		log.Printf("Failed to write to memfd: %v", err)
+		syscall.Close(fd)
 		return err
 	}
 
@@ -74,8 +75,11 @@ func (d *LinuxExtension) Load() error {
 	d.module, err = purego.Dlopen(path, purego.RTLD_NOW|purego.RTLD_GLOBAL)
 	if err != nil {
 		log.Printf("Failed to load shared library from memfd: %v", err)
+		syscall.Close(fd)
 		return err
 	}
+
+	syscall.Close(fd) // Close the fd after successful mapping
 
 	if d.init != "" {
 		var initFunc func()
