@@ -112,7 +112,8 @@ func GarbleCmd(config GoConfig, cwd string, command []string) ([]byte, error) {
 		fmt.Sprintf("HTTP_PROXY=%s", config.HTTPPROXY),
 		fmt.Sprintf("HTTPS_PROXY=%s", config.HTTPSPROXY),
 		fmt.Sprintf("PATH=%s:%s", filepath.Join(config.GOROOT, "bin"), os.Getenv("PATH")),
-		fmt.Sprintf("GOGARBLE=%s", config.GOGARBLE),
+		//fmt.Sprintf("GOGARBLE=%s", config.GOGARBLE),
+		fmt.Sprintf("GOGARBLE=%s", "filippo.io/age,github.com/Ne0nd0g/go-clr,github.com/gofrs/uuid,github.com/kbinani/screenshot,github.com/lesnuages/go-winio,github.com/miekg/dns,github.com/moloch--/memmod,github.com/stretchr/testify,github.com/tetratelabs/wazero,github.com/things-go/go-socks5,github.com/yiya1989/sshkrb5,golang.org/x/crypto,golang.org/x/net,golang.org/x/sys,golang.zx2c4.com/wireguard,google.golang.org/protobuf,gvisor.dev/gvisor,github.com/BurntSushi/xgb,github.com/Microsoft/go-winio,github.com/davecgh/go-spew,github.com/gen2brain/shm,github.com/google/btree,github.com/hashicorp/go-uuid,github.com/jcmturner/gofork,github.com/lxn/win,github.com/pmezard/go-difflib,golang.org/x/mod,golang.org/x/text,golang.org/x/time,golang.org/x/tools,golang.zx2c4.com/wintun,gopkg.in/jcmturner/aescts.v1,gopkg.in/jcmturner/dnsutils.v1,gopkg.in/jcmturner/goidentity.v3,gopkg.in/jcmturner/gokrb5.v7,gopkg.in/jcmturner/rpc.v1,gopkg.in/yaml.v3,github.com/bishopfox/sliver"),
 		fmt.Sprintf("HOME=%s", getHomeDir()),
 	}
 	var stdout bytes.Buffer
