@@ -48,3 +48,11 @@ dist/
 
 # Flag to show that go-assets.sh has been run
 .downloaded_assets
+
+/vendor/*
+/implant/vendor/*
+/build/*
+
+!vendor/
+!implant/vendor/
+!build/
