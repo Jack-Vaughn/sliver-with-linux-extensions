@@ -25,6 +25,8 @@ github.com/hashicorp/go-uuid v1.0.2 h1:cfejS+Tpcp13yd5nYHWDI6qVCny6wyX2Mt5SGur2I
 github.com/hashicorp/go-uuid v1.0.2/go.mod h1:6SBZvOh/SIDV7/2o3Jml5SYk/TvGqwFJ/bN7x4byOro=
 github.com/jcmturner/gofork v1.0.0 h1:J7uCkflzTEhUZ64xqKnkDxq3kzc96ajM1Gli5ktUem8=
 github.com/jcmturner/gofork v1.0.0/go.mod h1:MK8+TM0La+2rjBD4jE12Kj1pCCxK7d2LK/UM3ncEo0o=
+github.com/justincormack/go-memfd v0.0.0-20170219213707-6e4af0518993 h1:YnMJVKw7M5rE15UsVY7w2cnxcnArci7v1g3butq0YbI=
+github.com/justincormack/go-memfd v0.0.0-20170219213707-6e4af0518993/go.mod h1:VYi8SD2j14Nh9hNT7l57A00YUx/tMxY6pPA1IGljdrg=
 github.com/kbinani/screenshot v0.0.0-20191211154542-3a185f1ce18f h1:5hWo+DzJQSOBl6X+TDac0SPWffRonuRJ2///OYtYRT8=
 github.com/kbinani/screenshot v0.0.0-20191211154542-3a185f1ce18f/go.mod h1:f8GY5V3lRzakvEyr49P7hHRYoHtPr8zvj/7JodCoRzw=
 github.com/lesnuages/go-winio v0.4.19 h1:lFDu1mnhg5em+8zTHO4ChSD11J56xkyE8m3N8IrVmbA=

@@ -246,6 +246,8 @@ github.com/jsimonetti/rtnetlink v1.3.5/go.mod h1:0LFedyiTkebnd43tE4YAkWGIq9jQpho
 github.com/json-iterator/go v1.1.9/go.mod h1:KdQUCv79m/52Kvf8AW2vK1V8akMuk1QjK/uOdHXbAo4=
 github.com/json-iterator/go v1.1.12 h1:PV8peI4a0ysnczrg+LtxykD8LfKY9ML6u2jnxaEnrnM=
 github.com/json-iterator/go v1.1.12/go.mod h1:e30LSqwooZae/UwlEbR2852Gd8hjQvJoHmT4TnhNGBo=
+github.com/justincormack/go-memfd v0.0.0-20170219213707-6e4af0518993 h1:YnMJVKw7M5rE15UsVY7w2cnxcnArci7v1g3butq0YbI=
+github.com/justincormack/go-memfd v0.0.0-20170219213707-6e4af0518993/go.mod h1:VYi8SD2j14Nh9hNT7l57A00YUx/tMxY6pPA1IGljdrg=
 github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 h1:Z9n2FFNUXsshfwJMBgNA0RU6/i7WVaAegv3PtuIHPMs=
 github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51/go.mod h1:CzGEWj7cYgsdH8dAjBGEr58BoE7ScuLd+fwFZ44+/x8=
 github.com/kbinani/screenshot v0.0.0-20191211154542-3a185f1ce18f h1:5hWo+DzJQSOBl6X+TDac0SPWffRonuRJ2///OYtYRT8=

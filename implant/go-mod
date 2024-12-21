@@ -9,6 +9,7 @@ require (
 	github.com/Ne0nd0g/go-clr v1.0.3
 	github.com/ebitengine/purego v0.8.1
 	github.com/gofrs/uuid v4.0.0+incompatible
+	github.com/justincormack/go-memfd v0.0.0-20170219213707-6e4af0518993
 	github.com/kbinani/screenshot v0.0.0-20191211154542-3a185f1ce18f
 	github.com/lesnuages/go-winio v0.4.19
 	github.com/miekg/dns v1.1.50

@@ -23,13 +23,11 @@ package extension
 import (
 	"fmt"
 	"log"
-	"syscall"
 	"unsafe"
 
 	"github.com/ebitengine/purego"
+	"github.com/justincormack/go-memfd"
 )
-
-const SYS_MEMFD_CREATE = 319 // Fallback definition for memfd_create on x86_64
 
 type LinuxExtension struct {
 	id          string
@@ -59,35 +57,34 @@ func (d *LinuxExtension) GetArch() string {
 }
 
 func (d *LinuxExtension) Load() error {
-	fd, err := createMemFd()
-	if err != nil {
-		log.Printf("Failed to create memfd: %v", err)
-		return err
-	}
-	err = writeToMemFd(fd, d.data)
-	if err != nil {
-		log.Printf("Failed to write to memfd: %v", err)
-		syscall.Close(fd)
-		return err
-	}
+    mfd, err := createAndWriteMemFd(d.data)
+    if err != nil {
+        log.Printf("Failed to create and write memfd: %v", err)
+        return err
+    }
+    defer mfd.Close() // Ensure the memfd is closed after loading
 
-	path := "/proc/self/fd/" + itoa(fd)
-	d.module, err = purego.Dlopen(path, purego.RTLD_NOW|purego.RTLD_GLOBAL)
-	if err != nil {
-		log.Printf("Failed to load shared library from memfd: %v", err)
-		syscall.Close(fd)
-		return err
-	}
+    // Obtain the file descriptor
+    fd := mfd.Fd()
 
-	syscall.Close(fd) // Close the fd after successful mapping
+    // Construct the path to the memfd
+    path := fmt.Sprintf("/proc/self/fd/%d", fd)
 
-	if d.init != "" {
-		var initFunc func()
-		purego.RegisterLibFunc(&initFunc, d.module, d.init)
-		initFunc()
-	}
+    // Load the shared library from the memfd
+    d.module, err = purego.Dlopen(path, purego.RTLD_NOW|purego.RTLD_GLOBAL)
+    if err != nil {
+        log.Printf("Failed to load shared library from memfd: %v", err)
+        return err
+    }
 
-	return nil
+    // Initialize the library if an init function is specified
+    if d.init != "" {
+        var initFunc func()
+        purego.RegisterLibFunc(&initFunc, d.module, d.init)
+        initFunc()
+    }
+
+    return nil
 }
 
 func (d *LinuxExtension) Call(export string, arguments []byte, onFinish func([]byte)) error {
@@ -105,20 +102,32 @@ func (d *LinuxExtension) extensionCallback(data uintptr, length uintptr) {
 	d.onFinish(outBytes)
 }
 
-// createMemFd creates an in-memory file descriptor using the memfd_create syscall
-func createMemFd() (int, error) {
-	var emptyName [1]byte // A single null byte to represent an empty name
-	fd, _, errno := syscall.Syscall(SYS_MEMFD_CREATE, uintptr(unsafe.Pointer(&emptyName[0])), 0, 0)
-	if errno != 0 {
-		return -1, errno
-	}
-	return int(fd), nil
-}
+func createAndWriteMemFd(data []byte) (*memfd.Memfd, error) {
+    // Create a new memfd with desired flags
+    mfd, err := memfd.Create()
+    if err != nil {
+        return nil, fmt.Errorf("failed to create memfd: %w", err)
+    }
 
-// writeToMemFd writes the given data to the memory file descriptor
-func writeToMemFd(fd int, data []byte) error {
-	_, err := syscall.Write(fd, data)
-	return err
+    // Write data to the memfd
+    if _, err := mfd.Write(data); err != nil {
+        mfd.Close()
+        return nil, fmt.Errorf("failed to write to memfd: %w", err)
+    }
+
+    // Set the size of the memfd to match the data length
+    if err := mfd.SetSize(int64(len(data))); err != nil {
+        mfd.Close()
+        return nil, fmt.Errorf("failed to set memfd size: %w", err)
+    }
+
+    // Optionally, set seals to prevent further modifications
+    if err := mfd.SetSeals(memfd.SealAll); err != nil {
+        mfd.Close()
+        return nil, fmt.Errorf("failed to set memfd seals: %w", err)
+    }
+
+    return mfd, nil
 }
 
 // itoa converts an integer to a string (quick helper function)
