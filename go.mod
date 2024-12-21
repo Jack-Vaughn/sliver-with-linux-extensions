@@ -12,12 +12,12 @@ require (
 	github.com/Binject/binjection v0.0.0-20200705191933-da1a50d7013d
 	github.com/Binject/debug v0.0.0-20210312092933-6277045c2fdf
 	github.com/Binject/go-donut v0.0.0-20210701074227-67a31e2d883e
-	github.com/Binject/universal v0.0.0-20210304094126-daefaa886313
 	github.com/Ne0nd0g/go-clr v1.0.3
 	github.com/alecthomas/chroma v0.10.0
 	github.com/cheggaaa/pb/v3 v3.1.2
 	github.com/chromedp/cdproto v0.0.0-20230220211738-2b1ec77315c9
 	github.com/chromedp/chromedp v0.9.1
+	github.com/ebitengine/purego v0.8.1
 	github.com/fatih/color v1.15.0
 	github.com/glebarez/sqlite v1.10.0
 	github.com/gofrs/uuid v4.4.0+incompatible
@@ -75,8 +75,6 @@ require (
 	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/akutz/memconn v0.1.0 // indirect
 	github.com/alexbrainman/sspi v0.0.0-20231016080023-1a75b4708caa // indirect
-	github.com/awgh/cppgo v0.0.0-20210224085512-3d24bca8edc0 // indirect
-	github.com/awgh/rawreader v0.0.0-20200626064944-56820a9c6da4 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.21.0 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.18.42 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.13.40 // indirect
